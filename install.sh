@@ -1,28 +1,30 @@
 #!/bin/bash
 
-sudo apt-get update -y
-sudo apt-get install build-essential -y
-sudo apt install linuxbrew-wrapper -y
+# Update and download packages
+sudo apt-get update -y && apt-get install -y libleveldb-dev build-essential
+sudo apt-get install golang-go -y
 sudo apt-get install nginx -y
+sudo apt-get install git -y
 
-test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv)
-test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
-test -r ~/.bash_profile && echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.bash_profile
-echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.profile
+# Download source
+git ~/clone https://github.com/pokt-network/pocket-core.git
+cd ~/pocket-core
+git checkout tags/RC-0.4.3
 
+# Compile Source (Var not necessary)
+GOPATH=$(which go)
+go build -tags cleveldb -o /usr/bin/pocket ./app/cmd/pocket_core/main.go
 
-brew tap pokt-network/pocket-core
-brew install pokt-network/pocket-core/pocket
-pocket version
-sudo cp /home/linuxbrew/.linuxbrew/bin/pocket /usr/local/bin
-
+# Create .pocket dir and download genesis.json and copy config.json and chains.json
 mkdir -p ~/.pocket/config 
+wget -P ~/.pocket/config/ https://raw.githubusercontent.com/pokt-network/pocket-network-genesis/master/testnet/genesis.json
+cp ./config.json ~/.pocket/config/ 
+cp ./chains.json ~/.pocket/config/ 
 
-curl -O https://raw.githubusercontent.com/pokt-network/pocket-network-genesis/master/testnet/genesis.json > ~/.pocket/config/genesis.json
 
-#wget https://raw.githubusercontent.com/pokt-network/pocket-network-genesis/master/testnet/genesis.json -P ~/.pocket/config
+#Add ulimit increase
 
-cp ./config.json ~/.pocket/config/
-cp ./chains.json ~/.pocket/config/
+
+
 
 ls ~/.pocket/config
