@@ -1,5 +1,7 @@
 #!/bin/bash
 
+INSTALLDIR=$(pwd)
+
 # Update and download packages
 sudo apt-get update -y && apt-get install -y libleveldb-dev build-essential
 sudo apt-get install golang-go -y
@@ -17,14 +19,16 @@ go build -tags cleveldb -o /usr/bin/pocket ./app/cmd/pocket_core/main.go
 
 # Create .pocket dir and download genesis.json and copy config.json and chains.json
 mkdir -p ~/.pocket/config 
+rm ~/.pocket/config/genesis.json
 wget -P ~/.pocket/config/ https://raw.githubusercontent.com/pokt-network/pocket-network-genesis/master/testnet/genesis.json
-cp ./config.json ~/.pocket/config/ 
-cp ./chains.json ~/.pocket/config/ 
-
+cp $INSTALLDIR/config.json ~/.pocket/config/ 
+cp $INSTALLDIR/chains.json ~/.pocket/config/ 
 
 #Add ulimit increase
 
-
-
-
 ls ~/.pocket/config
+
+echo "POCKET INSTALLED - Continue Here: https://docs.pokt.network/docs/create-validator-node"
+
+#TO DO NGINX CONFIG
+#TO DO SSL CERT
