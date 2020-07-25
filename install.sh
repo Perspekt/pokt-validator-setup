@@ -1,22 +1,21 @@
 #!/bin/bash
 
-sudo apt-get update -y
-sudo apt-get install build-essential -y
-sudo apt install linuxbrew-wrapper -y
+sudo apt-get update -y && apt-get install -y libleveldb-dev build-essential
+sudo apt-get install golang-go -y
 sudo apt-get install nginx -y
-
-test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv)
-test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
-test -r ~/.bash_profile && echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.bash_profile
-echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.profile
+sudo apt-get install git -y
 
 
-brew tap pokt-network/pocket-core
-brew install pokt-network/pocket-core/pocket
-pocket version
-sudo cp /home/linuxbrew/.linuxbrew/bin/pocket /usr/local/bin
+git clone https://github.com/pokt-network/pocket-core.git
+cd pocket-core
+git checkout tags/RC-0.4.3
 
-mkdir -p ~/.pocket/config 
+which go
+GOPATH=/usr/bin/go
+
+go build -tags cleveldb -o /usr/bin/pocket ./app/cmd/pocket_core/main.go
+
+mkdir -p .pocket/config && cd .pocket/config; curl -O https://raw.githubusercontent.com/pokt-network/pocket-network-genesis/master/testnet/genesis.json
 
 curl -O https://raw.githubusercontent.com/pokt-network/pocket-network-genesis/master/testnet/genesis.json > ~/.pocket/config/genesis.json
 
